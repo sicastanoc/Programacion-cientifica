@@ -1,31 +1,18 @@
-from machine import Pin
+import machine
 import time
 
-p27 = Pin(27, Pin.IN)
-p2 = Pin(2, Pin.OUT)
-p2.on()
-p13 = Pin(13, Pin.OUT)
+# Configura el pin 27 como una entrada con pull-up
+button_pin = machine.Pin(27, machine.Pin.IN, machine.Pin.PULL_UP)
 
-estado_led = 0
+# Configura el pin 13 como una salida
+led_pin = machine.Pin(13, machine.Pin.OUT)
 
-def setLed(pin):
-    global estado_led
-    print("Se presiono el boton")
-    if estado_led == 0:
-        p13.on()
-        estado_led = 1
-    else:
-        p13.off()
-        estado_led = 0
-
-    
-
-
-p27.irq(handler=setLed, trigger=Pin.IRQ_RISING)
-
-while(1):
-    p2.on()
-    time.sleep_ms(500)
-    p2.off()
-    time.sleep_ms(500)
+while True:
+    # Verifica si el botón está presionado (debido a la resistencia pull-up)
+    if not button_pin.value():
+        print("Se presiono el boton")
+        # Cambia el estado del pin 13 (enciende/apaga el LED)
+        led_pin.value(not led_pin.value())
+        # Espera un tiempo breve para evitar el rebote del botón
+        time.sleep_ms(200)
 
